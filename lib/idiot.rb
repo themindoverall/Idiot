@@ -1,4 +1,5 @@
 require "idiot/version"
+require "idiot/config"
 
 require 'digest/sha2'
 
@@ -10,14 +11,14 @@ module Idiot
 	extend self
 
 	def initialize
-		@index = "abcdfghjklmnpqrstvwxyz0123456789BCDFGHJKLMNPQRSTVWXYZ"
-		passKey = "chris"
+		@index = Idiot::Config.alphabet
+		pass_key = Idiot::Config.pass_key
 
 		i = @index.split(//)
 
-		passhash = (Digest::SHA2.new << passKey).to_s
+		passhash = (Digest::SHA2.new << pass_key).to_s
 		passhash = if passhash.size < @index.size
-			(Digest::SHA2.new(512) << passKey).to_s
+			(Digest::SHA2.new(512) << pass_key).to_s
 		else
 			passhash
 		end
@@ -34,10 +35,8 @@ module Idiot
 
 		result = ""
 		n = Math.log(num, @base).floor
-		puts "n is #{n}"
 
 		n.step(0, -1) {|i|
-			puts "i is now #{i}"
 			bcp = @base ** i
 			a = ((num / bcp) % @base).floor
 			result << @index.slice(a, 1)
